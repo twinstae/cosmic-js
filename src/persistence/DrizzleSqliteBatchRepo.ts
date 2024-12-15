@@ -1,11 +1,13 @@
 import { Database } from "bun:sqlite";
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core';
+import { relations } from 'drizzle-orm/relations';
+import { eq } from 'drizzle-orm/sql/expressions';
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core';
 import { drizzle } from 'drizzle-orm/bun-sqlite';
-import { eq, placeholder, relations } from 'drizzle-orm';
 
 import * as Batch from '../domain/Batch';
 import { BatchRepo } from './types';
 import { assertBatch } from '../typia';
+import { sql } from 'drizzle-orm';
 
 const batches = sqliteTable('batches', {
     id: text('id').primaryKey(),
@@ -37,18 +39,18 @@ function DrizzleSqliteBatchRepo(bunDb: Database): BatchRepo {
         schema: { batches, allocations, orderLines, allocated }
     });
     const preparedInsertBatch = db.insert(batches).values({
-        id: placeholder('id'),
-        sku: placeholder('sku'),
-        quantity: placeholder('quantity'),
-        eta: placeholder('eta'),
+        id: sql.placeholder('id'),
+        sku: sql.placeholder('sku'),
+        quantity: sql.placeholder('quantity'),
+        eta: sql.placeholder('eta'),
     }).prepare()
     const preparedInsertOrderLine = db.insert(orderLines).values({
-        orderId: placeholder('orderId'),
-        sku: placeholder('sku'),
-        quantity: placeholder('quantity'),
-        batchId: placeholder('batchId'),
+        orderId: sql.placeholder('orderId'),
+        sku: sql.placeholder('sku'),
+        quantity: sql.placeholder('quantity'),
+        batchId: sql.placeholder('batchId'),
     }).prepare()
-    const preparedAll = db.query.batches.prepareFindMany({
+    const preparedAll = db.query.batches.findMany({
         with: {
             allocations: {
                 columns: {
@@ -56,8 +58,8 @@ function DrizzleSqliteBatchRepo(bunDb: Database): BatchRepo {
                 }
             }
         }
-    });
-    const preparedGet = db.query.batches.prepareFindMany({
+    }).prepare();
+    const preparedGet = db.query.batches.findMany({
         with: {
             allocations: {
                 columns: {
@@ -65,9 +67,9 @@ function DrizzleSqliteBatchRepo(bunDb: Database): BatchRepo {
                 }
             }
         },
-        where: eq(batches.id, placeholder('batchId')),
-    });
-    const preparedFindBatchForOrderLine = db.query.orderLines.prepareFindMany({
+        where: eq(batches.id, sql.placeholder('batchId')),
+    }).prepare();
+    const preparedFindBatchForOrderLine = db.query.orderLines.findMany({
         with: {
             allocated: {
                 with: {
@@ -79,11 +81,11 @@ function DrizzleSqliteBatchRepo(bunDb: Database): BatchRepo {
                 }
             }
         },
-        where: eq(orderLines.orderId, placeholder('orderId'))
-    });
+        where: eq(orderLines.orderId, sql.placeholder('orderId'))
+    }).prepare();
 
     return {
-        async add(batch: Batch.T) {
+        async add(batch: Batch.Type) {
             preparedInsertBatch.run(batch)
             for (const line of batch.allocations) {
                 preparedInsertOrderLine.run({
@@ -99,21 +101,21 @@ function DrizzleSqliteBatchRepo(bunDb: Database): BatchRepo {
             })
         },
         async get(batchId: string) {
-            const batch = preparedGet.execute({ batchId }).at(0)
+            const batch = await preparedGet.execute({ batchId }).then(result => result.at(0))
             if (batch === undefined) {
                 throw Error('does not exist')
             }
             return assertBatch(batch);
         },
         async findBatchForOrderLine(orderId: string) {
-            const line = preparedFindBatchForOrderLine.execute({ orderId }).at(0) as { allocated?: unknown } || null
+            const line = await preparedFindBatchForOrderLine.execute({ orderId }).then(result => result.at(0));
             if (typeof line !== 'object' || !line.allocated) {
                 throw Error('does not exist')
             }
             return assertBatch(line.allocated);
         },
         async list() {
-            return preparedAll.execute().map(assertBatch);
+            return preparedAll.execute().then(result => result.map(assertBatch));
         }
     }
 }

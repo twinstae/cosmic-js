@@ -1,6 +1,6 @@
 import * as Batch from './Batch';
 
-export function allocate(line: Batch.OrderLine, batchList: Batch.T[]): Batch.T {
+export function allocate(line: Batch.OrderLine, batchList: Batch.Type[]): Batch.Type {
 	const batch = batchList.filter(batch => Batch.canAllocate(batch, line)).sort((a,b) => {
 		if (a.eta === b.eta){
 			return 0;

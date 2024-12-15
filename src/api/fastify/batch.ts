@@ -63,5 +63,22 @@ export default function (fastify: FastifyTypebox, _options: unknown, done: () =>
 
         return reply.code(201).send({ batchId: batchId })
     })
+
+    fastify.get('/allocations/:orderId', {
+        schema: {
+            params: t.Object({
+                orderId: t.String()
+            }),
+            response: {
+                200: t.Object({
+                    batch: batchDto
+                })
+            }
+        }
+    }, async (req) => {
+        const orderId = req.params.orderId;
+        const batch = await repo.findBatchForOrderLine(orderId);
+        return { batch }
+    })
     done()
 };

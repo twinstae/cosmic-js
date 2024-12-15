@@ -1,10 +1,9 @@
 import { createRoute } from '@hono/zod-openapi'
 import { AnyZodObject, ZodSchema } from 'zod'
 
-type ConfigT = Parameters<typeof createRoute>[0]['responses'][string]['content'] extends infer A | undefined ? A : never
-export type SchemaBaseT = ConfigT['string']['schema']
 
-export const jsonBody = <SchemaT extends SchemaBaseT>(schema: SchemaT, description?: string) => ({
+
+export const jsonBody = <SchemaT extends ZodSchema>(schema: SchemaT, description?: string) => ({
 	content: {
 		'application/json': {
 			schema
@@ -13,7 +12,7 @@ export const jsonBody = <SchemaT extends SchemaBaseT>(schema: SchemaT, descripti
 	description: description ?? '',
 })
 
-export const getRoute = <PathT extends string, ParamsT extends AnyZodObject, QueryT extends AnyZodObject, SchemaT extends SchemaBaseT>(path: PathT, { params, query, res: resSchema }: { params?: ParamsT, query?: QueryT, res: SchemaT }) => createRoute({
+export const getRoute = <PathT extends string, ParamsT extends AnyZodObject, QueryT extends AnyZodObject, SchemaT extends ZodSchema>(path: PathT, { params, query, res: resSchema }: { params?: ParamsT, query?: QueryT, res: SchemaT }) => createRoute({
 	method: 'get',
 	path,
 	request: {
@@ -25,7 +24,7 @@ export const getRoute = <PathT extends string, ParamsT extends AnyZodObject, Que
 	},
 })
 
-export const postRoute = <PathT extends string, ReqSchemaT extends SchemaBaseT, ResSchemaT extends SchemaBaseT>(path: PathT, { req: reqSchema, res: resSchema }: { req: ReqSchemaT, res: ResSchemaT }) => createRoute({
+export const postRoute = <PathT extends string, ReqSchemaT extends ZodSchema, ResSchemaT extends ZodSchema>(path: PathT, { req: reqSchema, res: resSchema }: { req: ReqSchemaT, res: ResSchemaT }) => createRoute({
 	method: 'post',
 	path,
 	request: {

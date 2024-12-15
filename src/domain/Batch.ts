@@ -1,7 +1,7 @@
 // 묶음 batch
 // 주문 품목 orderLine
 // 재고 available quantity
-export type T = {
+export type Type = {
 	id: string,
 	sku: string,
 	quantity: number,
@@ -23,22 +23,22 @@ function sum(iterable: Iterable<number>): number {
 	return result;
 }
 
-export function availableQuantity(batch: T){
+export function availableQuantity(batch: Type){
 	return batch.quantity - allocatedQuantity(batch);
 }
 
-export function allocatedQuantity(batch: T){
+export function allocatedQuantity(batch: Type){
 	return sum(batch.allocations.map(line => line.quantity))
 }
 
-export function alreadyAllocated(batch: T, line: OrderLine): boolean {
+export function alreadyAllocated(batch: Type, line: OrderLine): boolean {
 	if (batch.allocations.some(item => item.orderId === line.orderId)){
 		return true
 	}
 	return false;
 }
 
-export function canAllocate(batch: T, line: OrderLine): 'invalid-sku' | 'already-allocated' | 'out-of-stock' | 'ok' {
+export function canAllocate(batch: Type, line: OrderLine): 'invalid-sku' | 'already-allocated' | 'out-of-stock' | 'ok' {
 	if (batch.sku !== line.sku){
 		return 'invalid-sku'
 	}
@@ -54,7 +54,7 @@ export function canAllocate(batch: T, line: OrderLine): 'invalid-sku' | 'already
 	return 'ok';
 }
 
-export function allocate(batch: T, line: OrderLine): T {
+export function allocate(batch: Type, line: OrderLine): Type {
 	const status = canAllocate(batch, line) ;
 	if (status !== 'ok'){
 		throw Error(status)
@@ -66,7 +66,7 @@ export function allocate(batch: T, line: OrderLine): T {
 	}
 }
 
-export function deallocate(batch: T, line: OrderLine){
+export function deallocate(batch: Type, line: OrderLine){
 	return {
 		isSuccess: false
 	};

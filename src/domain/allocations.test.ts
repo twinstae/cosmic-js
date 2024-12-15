@@ -3,14 +3,14 @@ import * as B from './Batch';
 import * as Allocations from './allocations';
 
 it('이미 도착한 묶음을 더 선호한다.', async () => {
-	const 이미_도착한_묶음: B.T = {
+	const 이미_도착한_묶음: B.Type = {
 		id: 'batch-001',
 		sku: 'SMALL-TABLE',
 		quantity: 10,
 		allocations: [],
 		eta: null
 	}
-	const 도착_예정_묶음: B.T = {
+	const 도착_예정_묶음: B.Type = {
 		id: 'batch-02',
 		sku: 'SMALL-TABLE',
 		quantity: 10,
@@ -30,7 +30,7 @@ it('이미 도착한 묶음을 더 선호한다.', async () => {
 
 
 it('재고 없음', async () => {
-	const 이미_도착한_묶음: B.T = {
+	const 이미_도착한_묶음: B.Type = {
 		id: 'batch-001',
 		sku: 'SMALL-TABLE',
 		quantity: 10,

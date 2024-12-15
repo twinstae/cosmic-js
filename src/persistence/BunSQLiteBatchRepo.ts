@@ -23,7 +23,7 @@ function BunSqliteBatchRepo(db: Database): BatchRepo {
     const allQuery = db.query('SELECT b.id as batch_id, b.sku as sku, b.quantity, b.eta, o.order_id as order_id, o.quantity as line_quantity FROM batches as b LEFT JOIN order_lines as o ON o.batch_id = b.id')
     const insertBatch = db.query('INSERT INTO batches (id, sku, quantity, eta) VALUES ($id, $sku, $quantity, $eta)')
     const insertOrderLine = db.query('INSERT INTO order_lines (order_id, sku, quantity, batch_id) VALUES ($order_id, $sku, $quantity, $batch_id)')
-    const createBatch = db.transaction((batch: Batch.T) => {
+    const createBatch = db.transaction((batch: Batch.Type) => {
         insertBatch.run({
             $id: batch.id,
             $sku: batch.sku,
@@ -33,7 +33,7 @@ function BunSqliteBatchRepo(db: Database): BatchRepo {
         for (const line of batch.allocations) insertOrderLine.run({ $order_id: line.orderId, $sku: line.sku, $quantity: line.quantity, $batch_id: batch.id });
     });
     return {
-        async add(batch: Batch.T) {
+        async add(batch: Batch.Type) {
             createBatch(batch)
         },
         async allocate(batchId, line) {

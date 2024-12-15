@@ -1,4 +1,5 @@
-import { Elysia, t } from 'elysia';
+import { Elysia } from 'elysia';
+import { Type as t } from '@sinclair/typebox';
 import FakeBatchUnitOfWork from '../../persistence/FakeBatchUnitOfWork';
 import * as batchServices from '../../service/BatchServices';
 import FakeBatchRepo from '../../persistence/FakeBatchRepo';
@@ -6,7 +7,7 @@ import { batchDto, orderLineDto } from '../../schema/typebox/batch';
 
 const repo = FakeBatchRepo()
 
-const createBatchGroup = (app: Elysia) =>
+const createBatchGroup = (app: Elysia<"/batches">) =>
 	app.get('', async () => {
 		const batchList = await repo.list();
 		return { batchList }
@@ -17,7 +18,6 @@ const createBatchGroup = (app: Elysia) =>
 	})
 		.post('', async ({ body }) => {
 			const batch = body
-
 			await repo.add(batch)
 
 			return { batchId: batch.id }

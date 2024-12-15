@@ -2,7 +2,7 @@ import { describe, it, expect } from 'bun:test';
 import * as Batch from './Batch';
 
 function setupBatchAndLine(sku: string, batchQuantity: number, lineQuantity: number) {
-	const batch: Batch.T = {
+	const batch: Batch.Type = {
 		id: 'batch-001',
 		sku,
 		quantity: batchQuantity,

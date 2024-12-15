@@ -1,12 +1,12 @@
 import * as Batch from '../domain/Batch'
 
 export interface BatchRepo {
-    add(batch: Batch.T): Promise<void>
-    findBatchForOrderLine(orderId: Batch.OrderLine['orderId']): Promise<Batch.T>
-    get(id: Batch.T['id']): Promise<Batch.T>
-    allocate(id: Batch.T['id'], orderLine: Batch.OrderLine): Promise<void>
+    add(batch: Batch.Type): Promise<void>
+    findBatchForOrderLine(orderId: Batch.OrderLine['orderId']): Promise<Batch.Type>
+    get(id: Batch.Type['id']): Promise<Batch.Type>
+    allocate(id: Batch.Type['id'], orderLine: Batch.OrderLine): Promise<void>
 
-    list(): Promise<Batch.T[]>
+    list(): Promise<Batch.Type[]>
 }
 
 export interface BatchUnitOfWork {

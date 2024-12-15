@@ -2,10 +2,10 @@ import * as Batch from '../domain/Batch';
 import { BatchRepo } from './types';
 
 function FakeBatchRepo(): BatchRepo {
-    let _batches: Batch.T[] = [];
+    let _batches: Batch.Type[] = [];
 
     return {
-        async add(batch: Batch.T) {
+        async add(batch: Batch.Type) {
             if (_batches.some(item => item.id === batch.id)) {
                 throw Error('already exist')
             }

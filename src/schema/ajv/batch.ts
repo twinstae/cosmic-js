@@ -1,5 +1,4 @@
-import { SchemaBaseT } from '../../api/hono/openapiUtils';
-import Ajv from 'ajv';
+import Ajv, { Schema } from 'ajv';
 
 const ajv = new Ajv();
 export const orderLineJSONSchema = {
@@ -11,7 +10,7 @@ export const orderLineJSONSchema = {
     },
     required: ["orderId", "sku", "quantity"],
     additionalProperties: false
-} satisfies SchemaBaseT
+} satisfies Schema;
 
 export const validateOrderLine = ajv.compile(orderLineJSONSchema);
 
@@ -26,6 +25,6 @@ export const batchJSONSchema = {
     },
     required: ["id", "sku", "quantity", "eta", "allocations"],
     additionalProperties: false
-} satisfies SchemaBaseT
+} satisfies Schema
 
 export const validateBatch = ajv.compile(batchJSONSchema);

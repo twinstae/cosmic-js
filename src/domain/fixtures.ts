@@ -1,6 +1,6 @@
 import * as Batch from './Batch';
 
-export const BATCH: Batch.T = {
+export const BATCH: Batch.Type = {
     id: 'batch-001',
     sku: 'SMALL-TABLE',
     quantity: 10,

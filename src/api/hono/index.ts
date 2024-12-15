@@ -20,7 +20,7 @@ app.openapi(getRoute('/batches', {
 	})
 }), async (c) => {
 	const batchList = await repo.list();
-	return c.jsonT({ batchList })
+	return c.json({ batchList })
 })
 
 app.openapi(postRoute('/batches', {
@@ -32,7 +32,7 @@ app.openapi(postRoute('/batches', {
 	const batch = c.req.valid('json')
 	await repo.add(batch)
 
-	return c.jsonT({ batchId: batch.id })
+	return c.json({ batchId: batch.id })
 })
 
 app.openapi(postRoute('/batches/allocate', {
@@ -46,7 +46,7 @@ app.openapi(postRoute('/batches/allocate', {
 	const uow = FakeBatchUnitOfWork(repo)
 	const batchId = await batchServices.allocate(line, uow);
 
-	return c.jsonT({ batchId })
+	return c.json({ batchId })
 })
 
 app.openapi(getRoute('/batches/allocations/:orderId', {
@@ -55,9 +55,9 @@ app.openapi(getRoute('/batches/allocations/:orderId', {
 	}),
 	res: z.object({ batch: batchSchema })
 }), async (c) => {
-	const { orderId } = c.req.valid('param')
+	const { orderId } = c.req.param()
 	const batch = await repo.findBatchForOrderLine(orderId);
-	return c.jsonT({ batch })
+	return c.json({ batch })
 })
 
 app.onError((error, c) => {

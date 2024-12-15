@@ -1,15 +1,16 @@
-import app from './index.ts';
+import { router } from './index';
 import { runTestScenario } from '../scenario';
-import { describe } from 'bun:test';
+
+const HOST = "http://localhost:3000"
 
 async function get(path: string){
-    const res = await app.request(path);
+    const res = await router.fetch(HOST + path);
 
     return res.json();
 }
 
 async function post(path: string, data: unknown){
-    return app.request(path, {
+    return router.fetch(HOST + path, {
         method: 'post',
         headers: {
             "Content-Type": "application/json"
@@ -18,8 +19,6 @@ async function post(path: string, data: unknown){
     })
 }
 
-describe("hono", () => {
-    runTestScenario("hono api", {
-        get, post
-    })
+runTestScenario("fets api", {
+    get, post
 })

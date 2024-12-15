@@ -12,7 +12,7 @@ await fastify.register(swagger, {
     swagger: {
         info: {
             title: 'Test swagger',
-            description: 'Testing the Fastify swagger API',
+            description: 'Testing theallocate Fastify swagger API',
             version: '0.1.0'
         },
         externalDocs: {
@@ -53,7 +53,7 @@ fastify.get('/', {
 
 fastify.get('/redoc', async (request, reply) => {
     reply.header('content-type', 'text/html')
-    return Bun.file('./src/api/elysia/redoc.html').text()
+    return Bun.file('./src/api/fastify/redoc.html').text()
 })
 
 fastify.register(registerBatches, { prefix: '/batches' })

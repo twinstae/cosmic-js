@@ -2,7 +2,7 @@ import * as Batch from '../domain/Batch';
 import * as Allocation from '../domain/allocations';
 import { BatchUnitOfWork } from '../persistence/types';
 
-function isValidSku(sku: string, batches: Batch.T[]) {
+function isValidSku(sku: string, batches: Batch.Type[]) {
     return batches.some(batch => batch.sku === sku);
 }
 
