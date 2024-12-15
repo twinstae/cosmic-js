@@ -86,6 +86,11 @@ function DrizzleSqliteBatchRepo(bunDb: Database): BatchRepo {
 
     return {
         async add(batch: Batch.Type) {
+            const result = await preparedGet.execute({ batchId: batch.id });
+            if (result.length > 0) {
+                throw Error('already exist')
+            }
+
             preparedInsertBatch.run(batch)
             for (const line of batch.allocations) {
                 preparedInsertOrderLine.run({
@@ -95,6 +100,11 @@ function DrizzleSqliteBatchRepo(bunDb: Database): BatchRepo {
             }
         },
         async allocate(batchId, line) {
+            const batch = await preparedGet.execute({ batchId }).then(result => result.at(0))
+            if (batch === undefined) {
+                throw Error('does not exist')
+            }
+
             preparedInsertOrderLine.run({
                 ...line,
                 batchId

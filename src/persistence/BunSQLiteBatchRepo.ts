@@ -24,6 +24,11 @@ function BunSqliteBatchRepo(db: Database): BatchRepo {
     const insertBatch = db.query('INSERT INTO batches (id, sku, quantity, eta) VALUES ($id, $sku, $quantity, $eta)')
     const insertOrderLine = db.query('INSERT INTO order_lines (order_id, sku, quantity, batch_id) VALUES ($order_id, $sku, $quantity, $batch_id)')
     const createBatch = db.transaction((batch: Batch.Type) => {
+        const rows = getQuery.all({ $batchId: batch.id }) as any[];
+        if (rows.length > 0) {
+            throw Error('already exist')
+        }
+
         insertBatch.run({
             $id: batch.id,
             $sku: batch.sku,
@@ -37,6 +42,10 @@ function BunSqliteBatchRepo(db: Database): BatchRepo {
             createBatch(batch)
         },
         async allocate(batchId, line) {
+            const rows = getQuery.all({ $batchId: batchId }) as any[];
+            if (rows.length === 0) {
+                throw Error('does not exist')
+            }
             insertOrderLine.run({
                 $order_id: line.orderId, $sku: line.sku, $quantity: line.quantity, $batch_id: batchId
             })

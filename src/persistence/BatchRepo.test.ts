@@ -10,9 +10,13 @@ function testRepo(name: string, setup: () => Promise<BatchRepo>) {
     it(name, async () => {
         const repo = await setup();
 
+        expect(repo.get(BATCH.id)).rejects.toThrow("does not exist");
+        expect(repo.allocate(BATCH.id, ORDER_LINE)).rejects.toThrow("does not exist");
+
         expect(await repo.list()).toStrictEqual([]);
 
         await repo.add(BATCH);
+        expect(repo.add(BATCH)).rejects.toThrow("already exist");
 
         expect(await repo.list()).toStrictEqual([BATCH]);
 

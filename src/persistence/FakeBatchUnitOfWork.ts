@@ -10,7 +10,7 @@ function FakeBatchUnitOfWork(repo: BatchRepo): BatchUnitOfWork {
         },
         async rollback() {
             if (committed){
-                throw Error('already comitted')
+                throw Error('already committed')
             }
         },
     }

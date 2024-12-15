@@ -1,6 +1,7 @@
 import * as Batch from '../domain/Batch';
 import * as Allocation from '../domain/allocations';
 import { BatchUnitOfWork } from '../persistence/types';
+import invariant from 'tiny-invariant';
 
 function isValidSku(sku: string, batches: Batch.Type[]) {
     return batches.some(batch => batch.sku === sku);
@@ -19,9 +20,7 @@ export async function allocate(line: Batch.OrderLine, uow: BatchUnitOfWork): Pro
     } catch (error) {
         await uow.rollback();
 
-        if (error instanceof Error) {
-            throw Error('transaction failed! \n' + error.message, { cause: error })
-        }
-        throw Error('transaction failed! \n' + error, { cause: error })
+        invariant(error instanceof Error)
+        throw Error('transaction failed! \n' + error.message, { cause: error })
     }
 }
