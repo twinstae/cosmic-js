@@ -1,32 +1,21 @@
 import Fastify from "fastify";
 import {
-	TypeBoxTypeProvider,
+	type TypeBoxTypeProvider,
 	TypeBoxValidatorCompiler,
 } from "@fastify/type-provider-typebox";
 import registerBatches from "./batch";
 import { runTestScenario } from "../scenario";
 import { afterAll, beforeAll, describe } from "bun:test";
 
-const app = Fastify({
-	logger: false,
-})
-	.setValidatorCompiler(TypeBoxValidatorCompiler)
-	.withTypeProvider<TypeBoxTypeProvider>()
-	.register(registerBatches, { prefix: "/batches" });
-
-type AppT = typeof app;
-
 describe("Fastify API", () => {
-	let app: AppT;
+	const app = Fastify({
+		logger: false,
+	})
+		.setValidatorCompiler(TypeBoxValidatorCompiler)
+		.withTypeProvider<TypeBoxTypeProvider>()
+		.register(registerBatches, { prefix: "/batches" });
 
 	beforeAll(async () => {
-		app = Fastify({
-			logger: false,
-		})
-			.setValidatorCompiler(TypeBoxValidatorCompiler)
-			.withTypeProvider<TypeBoxTypeProvider>()
-			.register(registerBatches, { prefix: "/batches" });
-
 		await app.ready();
 	});
 

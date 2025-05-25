@@ -1,8 +1,8 @@
-import { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
+import type { TypeBoxTypeProvider } from "@fastify/type-provider-typebox";
 import { Type as t } from "@sinclair/typebox";
 
 import * as batchServices from "../../service/BatchServices";
-import {
+import type {
 	FastifyBaseLogger,
 	FastifyInstance,
 	RawReplyDefaultExpression,

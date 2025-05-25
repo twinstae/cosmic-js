@@ -1,6 +1,6 @@
 import {
 	Type as t,
-	TypeBoxTypeProvider,
+	type TypeBoxTypeProvider,
 	TypeBoxValidatorCompiler,
 } from "@fastify/type-provider-typebox";
 import Fastify from "fastify";
