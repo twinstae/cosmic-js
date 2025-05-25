@@ -1,36 +1,27 @@
-import { createRoute } from '@hono/zod-openapi'
-import { AnyZodObject, ZodSchema } from 'zod'
+import { describeRoute } from "hono-openapi";
+import { type BaseIssue, type BaseSchema, getDescription } from "valibot";
+import { resolver } from "hono-openapi/valibot";
 
-
-
-export const jsonBody = <SchemaT extends ZodSchema>(schema: SchemaT, description?: string) => ({
+export const jsonBody = <
+	SchemaT extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
+>(
+	schema: SchemaT,
+) => ({
 	content: {
-		'application/json': {
-			schema
+		"application/json": {
+			schema: resolver(schema),
 		},
 	},
-	description: description ?? '',
-})
+	description: getDescription(schema) ?? "",
+});
 
-export const getRoute = <PathT extends string, ParamsT extends AnyZodObject, QueryT extends AnyZodObject, SchemaT extends ZodSchema>(path: PathT, { params, query, res: resSchema }: { params?: ParamsT, query?: QueryT, res: SchemaT }) => createRoute({
-	method: 'get',
-	path,
-	request: {
-		params,
-		query
-	},
-	responses: {
-		200: jsonBody(resSchema, 'description' in resSchema ? resSchema.description : undefined),
-	},
-})
-
-export const postRoute = <PathT extends string, ReqSchemaT extends ZodSchema, ResSchemaT extends ZodSchema>(path: PathT, { req: reqSchema, res: resSchema }: { req: ReqSchemaT, res: ResSchemaT }) => createRoute({
-	method: 'post',
-	path,
-	request: {
-		body: jsonBody(reqSchema, 'description' in reqSchema ? reqSchema.description : undefined)
-	},
-	responses: {
-		201: jsonBody(resSchema, 'description' in resSchema ? resSchema.description : undefined),
-	},
-})
+export const simpleRoute = <
+	SchemaT extends BaseSchema<unknown, unknown, BaseIssue<unknown>>,
+>({
+	res: resSchema,
+}: { res: SchemaT }) =>
+	describeRoute({
+		responses: {
+			200: jsonBody(resSchema),
+		},
+	});

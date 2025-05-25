@@ -1,20 +1,19 @@
-import { BatchRepo, BatchUnitOfWork } from './types';
+import { BatchRepo, BatchUnitOfWork } from "./types";
 
 function FakeBatchUnitOfWork(repo: BatchRepo): BatchUnitOfWork {
-    let committed = false;
+	let committed = false;
 
-    return {
-        repo,
-        async commit(){
-            committed = true;
-        },
-        async rollback() {
-            if (committed){
-                throw Error('already committed')
-            }
-        },
-    }
-    
+	return {
+		repo,
+		async commit() {
+			committed = true;
+		},
+		async rollback() {
+			if (committed) {
+				throw Error("already committed");
+			}
+		},
+	};
 }
 
-export default FakeBatchUnitOfWork
+export default FakeBatchUnitOfWork;

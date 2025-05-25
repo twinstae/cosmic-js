@@ -1,50 +1,63 @@
-import Fastify from 'fastify';
+import Fastify from "fastify";
 import {
-  TypeBoxTypeProvider,
-  TypeBoxValidatorCompiler,
-} from '@fastify/type-provider-typebox';
-import registerBatches from './batch';
-import { runTestScenario } from '../scenario';
-import { afterAll, beforeAll, describe } from 'bun:test';
+	TypeBoxTypeProvider,
+	TypeBoxValidatorCompiler,
+} from "@fastify/type-provider-typebox";
+import registerBatches from "./batch";
+import { runTestScenario } from "../scenario";
+import { afterAll, beforeAll, describe } from "bun:test";
 
-describe('Fastify API', () => {
-  let app: ReturnType<typeof Fastify>;
+const app = Fastify({
+	logger: false,
+})
+	.setValidatorCompiler(TypeBoxValidatorCompiler)
+	.withTypeProvider<TypeBoxTypeProvider>()
+	.register(registerBatches, { prefix: "/batches" });
 
-  beforeAll(async () => {
-    app = Fastify({
-      logger: false,
-    })
-      .setValidatorCompiler(TypeBoxValidatorCompiler)
-      .withTypeProvider<TypeBoxTypeProvider>();
+type AppT = typeof app;
 
-    app.register(registerBatches, { prefix: '/batches' });
+describe("Fastify API", () => {
+	let app: AppT;
 
-    await app.ready();
-  });
+	beforeAll(async () => {
+		app = Fastify({
+			logger: false,
+		})
+			.setValidatorCompiler(TypeBoxValidatorCompiler)
+			.withTypeProvider<TypeBoxTypeProvider>()
+			.register(registerBatches, { prefix: "/batches" });
 
-  afterAll(async () => {
-    await app.close();
-  });
+		await app.ready();
+	});
 
-  async function get(path: string) {
-    const res = await app.inject({
-      method: 'GET',
-      url: path,
-    });
+	afterAll(async () => {
+		await app.close();
+	});
 
-    return res.json();
-  }
+	async function get(path: string) {
+		const res = await app.inject({
+			method: "GET",
+			url: path,
+		});
 
-  async function post(path: string, data: unknown) {
-    return app.inject({
-      method: 'POST',
-      url: path,
-      payload: data,
-    });
-  }
+		return res.json();
+	}
 
-  runTestScenario('fastify api', {
-    get,
-    post,
-  });
+	async function post(path: string, data: string | object) {
+		const res = await app.inject({
+			method: "POST",
+			url: path,
+			payload: data,
+		});
+
+		return new Response(JSON.stringify(await res.json()), {
+			status: res.statusCode,
+			headers: new Headers(JSON.parse(JSON.stringify(res.headers))),
+		});
+	}
+
+	runTestScenario("fastify api", {
+		get,
+		post,
+	});
 });

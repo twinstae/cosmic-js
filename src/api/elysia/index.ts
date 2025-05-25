@@ -1,5 +1,7 @@
-import app from './app'
+import app from "./app";
 
-app.listen(3000)
+app.listen(3000);
 
-console.log(`🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}/docs`)
+console.log(
+	`🦊 Elysia is running at http://${app.server?.hostname}:${app.server?.port}/docs`,
+);
