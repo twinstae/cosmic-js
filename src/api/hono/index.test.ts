@@ -5,7 +5,16 @@ import { describe } from "bun:test";
 async function get(path: string) {
 	const res = await app.request(path);
 
-	return res.json();
+	if(res.ok) {
+
+		if(res.headers.get("Content-Type") === "application/json"){
+			return res.json()
+		}
+
+		return res.text()
+	}
+
+	throw Error(`${res.status} ${res.statusText}\n\n${await res.text()}`);
 }
 
 async function post(path: string, data: unknown) {

@@ -9,42 +9,62 @@ export function runTestScenario(
 	},
 ) {
 	it(implName, async () => {
-		const before = await client.get("/batches");
+		const logs: string[] = [];
 
-		expect(before).toStrictEqual({
-			batchList: [],
-		});
+		try {
+			logs.push("before GET /batches");
+			const before = await client.get("/batches");
 
-		await client.post("/batches", BATCH);
+			expect(before).toStrictEqual({
+				batchList: [],
+			});
 
-		const after = await client.get("/batches");
+			logs.push("POST /batches");
+			await client.post("/batches", BATCH);
 
-		expect(after).toStrictEqual({
-			batchList: [BATCH],
-		});
+			logs.push("after GET /batches");
+			const after = await client.get("/batches");
 
-		await client.post("/batches/allocate", ORDER_LINE);
+			expect(after).toStrictEqual({
+				batchList: [BATCH],
+			});
 
-		const batch = await client.get(
-			"/batches/allocations/" + ORDER_LINE.orderId,
-		);
+			logs.push("POST /batches/allocate");
+			await client.post("/batches/allocate", ORDER_LINE);
 
-		const final = await client.get("/batches");
+			logs.push(
+				`after allocate GET /batches/allocations/${ORDER_LINE.orderId}`,
+			);
+			const batch = await client.get(
+				`/batches/allocations/${ORDER_LINE.orderId}`,
+			);
 
-		expect(final).toStrictEqual({
-			batchList: [
-				{
+			expect(batch).toStrictEqual({
+				batch: {
 					...BATCH,
 					allocations: [ORDER_LINE],
 				},
-			],
-		});
+			});
 
-		expect(batch).toStrictEqual({
-			batch: {
-				...BATCH,
-				allocations: [ORDER_LINE],
-			},
-		});
+			logs.push("after allocate GET /batches");
+			const final = await client.get("/batches");
+
+			expect(final).toStrictEqual({
+				batchList: [
+					{
+						...BATCH,
+						allocations: [ORDER_LINE],
+					},
+				],
+			});
+
+			logs.push("End");
+		} catch (error) {
+			if (error instanceof Error) {
+				error.message = `[Logs]\n\n${logs.join("\n")}\n\n[Original Error]\n\n${error.message}`;
+
+				throw error;
+			}
+		}
 	});
 }
