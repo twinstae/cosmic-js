@@ -1,11 +1,11 @@
-import { Database } from "bun:sqlite";
+import type { Database } from "bun:sqlite";
 import { relations } from "drizzle-orm/relations";
 import { eq } from "drizzle-orm/sql/expressions";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { drizzle } from "drizzle-orm/bun-sqlite";
 
-import * as Batch from "../domain/Batch";
-import { BatchRepo } from "./types";
+import type * as Batch from "../domain/Batch";
+import type { BatchRepo } from "./types";
 import { assertBatch } from "../typia";
 import { sql } from "drizzle-orm";
 
@@ -129,7 +129,7 @@ function DrizzleSqliteBatchRepo(bunDb: Database): BatchRepo {
 				.execute({ batchId })
 				.then((result) => result.at(0));
 			if (batch === undefined) {
-				throw Error("does not exist");
+				return undefined;
 			}
 			return assertBatch(batch);
 		},
@@ -138,7 +138,7 @@ function DrizzleSqliteBatchRepo(bunDb: Database): BatchRepo {
 				.execute({ orderId })
 				.then((result) => result.at(0));
 			if (typeof line !== "object" || !line.allocated) {
-				throw Error("does not exist");
+				return undefined;
 			}
 			return assertBatch(line.allocated);
 		},

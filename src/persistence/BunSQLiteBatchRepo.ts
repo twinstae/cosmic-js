@@ -1,7 +1,7 @@
-import { Database } from "bun:sqlite";
+import type { Database } from "bun:sqlite";
 
-import * as Batch from "../domain/Batch";
-import { BatchRepo } from "./types";
+import type * as Batch from "../domain/Batch";
+import type { BatchRepo } from "./types";
 import { assertBatch } from "../typia";
 
 function groupBy<Item>(
@@ -75,7 +75,7 @@ function BunSqliteBatchRepo(db: Database): BatchRepo {
 		async get(batchId: string) {
 			const rows = getQuery.all({ $batchId: batchId }) as any[];
 			if (rows.length === 0) {
-				throw Error("does not exist");
+				return undefined;
 			}
 
 			const first = rows[0];
@@ -97,9 +97,10 @@ function BunSqliteBatchRepo(db: Database): BatchRepo {
 		async findBatchForOrderLine(orderId: string) {
 			const rows = findBatchForOrderLineQuery.all({
 				$orderId: orderId,
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			}) as any[];
 			if (rows.length === 0) {
-				throw Error("does not exist");
+				return undefined;
 			}
 
 			const first = rows[0];
@@ -119,6 +120,7 @@ function BunSqliteBatchRepo(db: Database): BatchRepo {
 			return assertBatch(batch);
 		},
 		async list() {
+			// biome-ignore lint/suspicious/noExplicitAny: <explanation>
 			const result = allQuery.all() as any[];
 
 			return [...groupBy(result, (item) => item.batch_id).values()].map(

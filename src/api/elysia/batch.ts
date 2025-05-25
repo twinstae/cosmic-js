@@ -1,4 +1,4 @@
-import { Elysia } from "elysia";
+import { Elysia, NotFoundError } from "elysia";
 import { Type as t } from "@sinclair/typebox";
 import FakeBatchUnitOfWork from "../../persistence/FakeBatchUnitOfWork";
 import * as batchServices from "../../service/BatchServices";
@@ -56,11 +56,17 @@ const batchGroup = new Elysia({ prefix: "/batches" })
 		"/allocations/:orderId",
 		async ({ params: { orderId } }) => {
 			const batch = await repo.findBatchForOrderLine(orderId);
+			if (!batch){
+				throw new NotFoundError()
+			}
+
 			return { batch };
 		},
 		{
 			params: t.Object({ orderId: t.String() }),
-			response: t.Object({ batch: batchDto }),
+			response: {
+				200: t.Object({ batch: batchDto })
+			},
 		},
 	);
 

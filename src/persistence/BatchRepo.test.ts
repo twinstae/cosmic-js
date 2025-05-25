@@ -1,6 +1,6 @@
 import Database from "bun:sqlite";
 import { it, expect } from "bun:test";
-import { BatchRepo } from "./types";
+import type { BatchRepo } from "./types";
 import DrizzleSqliteBatchRepo from "./DrizzleSqliteBatchRepo";
 import BunSqliteBatchRepo from "./BunSQLiteBatchRepo";
 import FakeBatchRepo from "./FakeBatchRepo";
@@ -10,7 +10,7 @@ function testRepo(name: string, setup: () => Promise<BatchRepo>) {
 	it(name, async () => {
 		const repo = await setup();
 
-		expect(repo.get(BATCH.id)).rejects.toThrow("does not exist");
+		await expect(repo.get(BATCH.id)).resolves.toBe(undefined);
 		expect(repo.allocate(BATCH.id, ORDER_LINE)).rejects.toThrow(
 			"does not exist",
 		);

@@ -29,6 +29,14 @@ describe("Fastify API", () => {
 			url: path,
 		});
 
+		const status = res.statusCode.toString();
+		if (status.startsWith("4") || status.startsWith("5")) {
+			throw new Response(res.body, {
+				status: res.statusCode,
+				headers: new Headers(JSON.parse(JSON.stringify(res.headers))),
+			});
+		}
+
 		return res.json();
 	}
 
@@ -39,8 +47,10 @@ describe("Fastify API", () => {
 			payload: data,
 		});
 
-		if (!res.statusCode.toString().startsWith("2")) {
-			throw new Response(JSON.stringify(res.body), {
+		const status = res.statusCode.toString();
+
+		if (status.startsWith("4") || status.startsWith("5")) {
+			throw new Response(res.body, {
 				status: res.statusCode,
 				headers: new Headers(JSON.parse(JSON.stringify(res.headers))),
 			});

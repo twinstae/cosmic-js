@@ -74,7 +74,15 @@ app.get(
 	),
 	async (c) => {
 		const { orderId } = c.req.param();
+
 		const batch = await repo.findBatchForOrderLine(orderId);
+
+		if (batch === undefined) {
+			return new Response(`NOT FOUND: ${c.req.url.toString()}`, {
+				status: 404,
+			});
+		}
+
 		return c.json({ batch });
 	},
 );

@@ -96,12 +96,17 @@ export default function (
 					200: t.Object({
 						batch: batchDto,
 					}),
+					404: t.String()
 				},
 			},
 		},
-		async (req) => {
+		async (req, res) => {
 			const orderId = req.params.orderId;
 			const batch = await repo.findBatchForOrderLine(orderId);
+
+			if(batch === undefined){
+				return res.status(404).send("NOT_FOUND");
+			}
 			return { batch };
 		},
 	);

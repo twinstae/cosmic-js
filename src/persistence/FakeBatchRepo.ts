@@ -1,5 +1,5 @@
-import * as Batch from "../domain/Batch";
-import { BatchRepo } from "./types";
+import type * as Batch from "../domain/Batch";
+import type { BatchRepo } from "./types";
 
 function FakeBatchRepo(): BatchRepo {
 	let _batches: Batch.Type[] = [];
@@ -22,7 +22,7 @@ function FakeBatchRepo(): BatchRepo {
 		async get(batchId: string) {
 			const batch = _batches.find((item) => item.id === batchId);
 			if (batch === undefined) {
-				throw Error("does not exist");
+				return undefined;
 			}
 			return batch;
 		},
@@ -31,7 +31,7 @@ function FakeBatchRepo(): BatchRepo {
 				item.allocations.some((allocation) => allocation.orderId === orderId),
 			);
 			if (batch === undefined) {
-				throw Error("does not exist");
+				return undefined;
 			}
 			return batch;
 		},
