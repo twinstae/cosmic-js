@@ -39,6 +39,13 @@ describe("Fastify API", () => {
 			payload: data,
 		});
 
+		if (!res.statusCode.toString().startsWith("2")) {
+			throw new Response(JSON.stringify(res.body), {
+				status: res.statusCode,
+				headers: new Headers(JSON.parse(JSON.stringify(res.headers))),
+			});
+		}
+
 		return new Response(JSON.stringify(await res.json()), {
 			status: res.statusCode,
 			headers: new Headers(JSON.parse(JSON.stringify(res.headers))),

@@ -6,16 +6,15 @@ const fetchElysia = async (path: string, init?: RequestInit) => {
 		new Request(`http://localhost:3000${path}`, init),
 	);
 
-	if(res.ok) {
-
-		if(res.headers.get("Content-Type") === "application/json"){
-			return res.json()
+	if (res.ok) {
+		if (res.headers.get("Content-Type") === "application/json") {
+			return res.json();
 		}
 
-		return res.text()
+		return res.text();
 	}
 
-	throw Error(`${res.status} ${await res.text()}`);
+	throw res;
 };
 const get = (path: string) => fetchElysia(path);
 const post = (path: string, body: unknown) =>

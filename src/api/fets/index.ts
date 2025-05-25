@@ -6,7 +6,20 @@ import { batchDto, orderLineDto } from "../../schema/typebox/batch";
 
 const repo = FakeBatchRepo();
 
-export const router = createRouter()
+const router = createRouter({
+	landingPage: false,
+	onError(error, request, context) {
+		if (error instanceof Error) {
+			return new Response(error.message, {
+				status: 500,
+			});
+		}
+
+		return new Response(String(error), {
+			status: 500,
+		});
+	},
+})
 	.route({
 		method: "GET",
 		path: "/batches",
@@ -88,12 +101,10 @@ export const router = createRouter()
 			const batch = await repo.findBatchForOrderLine(orderId);
 			if (batch) {
 				return Response.json({ batch });
-			} else {
-				return Response.json({ message: "Batch not found" }, { status: 404 });
 			}
+
+			return Response.json({ message: "Batch not found" }, { status: 404 });
 		},
 	});
-
-// ... (rest of the code remains the same)
 
 export default router;

@@ -8,6 +8,15 @@ export function runTestScenario(
 		post: (path: string, data: string | object) => Promise<Response>;
 	},
 ) {
+	it(`${implName} - 404`, async () => {
+		await expect(client.post("/btashec", {})).rejects.toThrow();
+	});
+
+	it(`${implName} - validation`, async () => {
+		const promise = client.post("/batches", {});
+		await expect(promise).rejects.toThrow();
+	});
+
 	it(implName, async () => {
 		const logs: string[] = [];
 

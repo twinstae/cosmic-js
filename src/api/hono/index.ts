@@ -79,12 +79,22 @@ app.get(
 	},
 );
 
+app.notFound(async (c) => {
+	return new Response(`NOT FOUND: ${c.req.url.toString()}`, {
+		status: 404,
+	});
+});
+
 app.onError((error, c) => {
 	if (error instanceof Error) {
-		return c.json({ error: error.message });
+		return new Response(error.message, {
+			status: 500,
+		});
 	}
 
-	return c.json({ error: "알 수 없는 에러" });
+	return new Response(String(error), {
+		status: 500,
+	});
 });
 
 app.get(

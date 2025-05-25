@@ -23,36 +23,32 @@ const app = new Elysia()
 			),
 	)
 	.onError(({ code, error, request }) => {
-		if (code === 'INTERNAL_SERVER_ERROR' || code === 'UNKNOWN') {
-
-		return new Response(`${code}: ${error.message}`, {
-			status: 500
-		});
-		}
-
-		if (code === 'NOT_FOUND') {
-			
-		return new Response(`${code}: ${request.url.toString()}`, {
-			status: 404
-		});
-		}
-
-		if (code === 'PARSE'){
+		if (code === "INTERNAL_SERVER_ERROR" || code === "UNKNOWN") {
 			return new Response(`${code}: ${error.message}`, {
-			status: 422
-		});
+				status: 500,
+			});
 		}
 
-		
-		if (code === 'VALIDATION') {
-			
-		return new Response(`${code}: ${error.message}`, {
-			status: 400
-		});
+		if (code === "NOT_FOUND") {
+			return new Response(`${code}: ${request.url.toString()}`, {
+				status: 404,
+			});
+		}
+
+		if (code === "PARSE") {
+			return new Response(`${code}: ${error.message}`, {
+				status: 422,
+			});
+		}
+
+		if (code === "VALIDATION") {
+			return new Response(`${code}: ${error.message}`, {
+				status: 400,
+			});
 		}
 
 		return new Response(`${code}: ${error.toString()}`, {
-			status: 400
+			status: 400,
 		});
 	});
 
