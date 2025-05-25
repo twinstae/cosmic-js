@@ -1,19 +1,24 @@
 import { describe } from "bun:test";
 import { runTestScenario } from "../scenario";
 import app from "./app";
-const fetchElysia = (path: string, init?: RequestInit) =>
-	app.handle(new Request("http://localhost:3000" + path, init)).then((res) => {
-		if (!res.ok) {
-			return res
-				.text()
-				.then((value) =>
-					Promise.reject(JSON.stringify({ code: res.status, error: value })),
-				);
+const fetchElysia = async (path: string, init?: RequestInit) => {
+	const res = await app.handle(
+		new Request(`http://localhost:3000${path}`, init),
+	);
+
+	if(res.ok) {
+
+		if(res.headers.get("Content-Type") === "application/json"){
+			return res.json()
 		}
-		return res.json();
-	});
+
+		return res.text()
+	}
+
+	throw Error(`${res.status} ${await res.text()}`);
+};
 const get = (path: string) => fetchElysia(path);
-const post = (path: string, body: any) =>
+const post = (path: string, body: unknown) =>
 	fetchElysia(path, {
 		method: "POST",
 		body: JSON.stringify(body),

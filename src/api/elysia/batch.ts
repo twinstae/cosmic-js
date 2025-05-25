@@ -7,8 +7,7 @@ import { batchDto, orderLineDto } from "../../schema/typebox/batch";
 
 const repo = FakeBatchRepo();
 
-const createBatchGroup = (app: Elysia<"/batches">) =>
-	app
+const batchGroup = new Elysia({ prefix: "/batches"})
 		.get(
 			"",
 			async () => {
@@ -65,4 +64,4 @@ const createBatchGroup = (app: Elysia<"/batches">) =>
 			},
 		);
 
-export default createBatchGroup;
+export default batchGroup;
