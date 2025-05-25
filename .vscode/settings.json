@@ -7,5 +7,6 @@
         "typebox",
         "typia",
         "valibot"
-    ]
+    ],
+    "typescript.experimental.useTsgo": true
 }
